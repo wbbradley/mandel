@@ -43,11 +43,30 @@
   (mandelbrot-depth c c 0))
 
 (defn generate-coords [w h]
-  (vector (for [y (range (+ h))]
-    (vector (for [x (range (+ w))]
-      (make-point x y))))))
+  (for [y (range (+ h))]
+    (for [x (range (+ w))]
+      (make-point x y))))
 
-(defn linear-interpolate [min-from max-from min-to max-to value-from]
+(defn map-coords 
+  "Apply f to each item in the 2-D coords structure"
+  [f coords]
+  (map #(map f %) coords))
+
+(defn linear-interpolate
+  [min-from max-from min-to max-to value-from]
   (let [diff-from (- max-from min-from)
+        diff-to (- max-to min-to)
         ratio (/ (- value-from min-from) diff-from)]
-    (+ min-from (* ratio diff-from))))
+    (+ min-to (* ratio diff-to))))
+
+(defn translate-point
+  "Interpolates a point in rect1 to a similar point within rect2"
+  [rect1 rect2 point]
+  {:x (linear-interpolate
+        (rect1 :x) (+ (rect1 :x) (rect1 :w))
+        (rect2 :x) (+ (rect2 :x) (rect2 :w))
+        (point :x))
+   :y (linear-interpolate
+        (rect1 :y) (+ (rect1 :y) (rect1 :w))
+        (rect2 :y) (+ (rect2 :y) (rect2 :w))
+        (point :y))})
