@@ -4,6 +4,12 @@
 
 (def MAX-DEPTH 100)
 
+; From http://paulbourke.net/dataformats/asciiart/
+(def ASCII-SHADE-SCALE " .'`^\",:;Il!i><~+_-?][}{1)(\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$")
+
+(defn get-shade-for-depth [depth]
+  (nth ASCII-SHADE-SCALE (mod depth (count ASCII-SHADE-SCALE))))
+
 (defn make-point [x y]
   {:x x :y y})
 
@@ -16,6 +22,12 @@
 (defn complex-add [c1 c2]
   {:real (+ (:real c1) (:real c2))
    :imag (+ (:imag c1) (:imag c2))})
+
+(defn complex-to-point [c]
+  {:x (c :real) :y (c :imag)})
+
+(defn point-to-complex [p]
+  {:real (p :x) :imag (p :y)})
 
 (defn complex-multiply [c1 c2]
   (let [x (:real c1)
@@ -30,17 +42,13 @@
               (* (:real c) (:real c)) 
               (* (:imag c) (:imag c)))))
 
-(defn mandelbrot-depth [z c depth]
-  (if (> depth MAX-DEPTH)
-    depth
-    (if
-      (< (complex-magnitude z) 2)
-      (let [z-squared (complex-multiply z z)]
-        (mandelbrot-depth (complex-add z-squared c) c (+ depth 1)))
-      depth)))
-
 (defn mandelbrot [c]
-  (mandelbrot-depth c c 0))
+  (loop [z c depth 0]
+    (if (or (>= depth MAX-DEPTH)
+            (>= (complex-magnitude z) 2))
+      depth
+      ; z <- z^2 + c
+      (recur (complex-add (complex-multiply z z) c) (+ depth 1)))))
 
 (defn generate-coords [w h]
   (for [y (range (+ h))]
