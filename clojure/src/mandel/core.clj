@@ -2,6 +2,8 @@
   (:require [clojure.math.numeric-tower :as math])
   (:gen-class))
 
+(def MAX-DEPTH 100)
+
 (defn make-point [x y]
   {:x x :y y})
 
@@ -29,7 +31,7 @@
               (* (:imag c) (:imag c)))))
 
 (defn mandelbrot-depth [z c depth]
-  (if (> depth 100)
+  (if (> depth MAX-DEPTH)
     depth
     (if
       (< (complex-magnitude z) 2)
