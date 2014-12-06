@@ -2,6 +2,12 @@
   (:require [clojure.math.numeric-tower :as math])
   (:gen-class))
 
+(defn make-point [x y]
+  {:x x :y y})
+
+(defn make-rect [x y w h]
+  {:x x :y y :w w :h h})
+
 (defn complex-make [real imag]
   {:real real :imag imag})
 
@@ -33,3 +39,13 @@
 
 (defn mandelbrot [c]
   (mandelbrot-depth c c 0))
+
+(defn generate-coords [w h]
+  (vector (for [y (range (+ h))]
+    (vector (for [x (range (+ w))]
+      (make-point x y))))))
+
+(defn linear-interpolate [min-from max-from min-to max-to value-from]
+  (let [diff-from (- max-from min-from)
+        ratio (/ (- value-from min-from) diff-from)]
+    (+ min-from (* ratio diff-from))))
