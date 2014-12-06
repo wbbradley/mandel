@@ -1,4 +1,5 @@
 (ns mandel.core
+  (:require [clojure.math.numeric-tower :as math])
   (:gen-class))
 
 (defn make-complex [real imag]
