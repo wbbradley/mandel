@@ -21,3 +21,4 @@ _testmain.go
 
 *.exe
 *.png
+.lein-repl-history

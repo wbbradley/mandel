@@ -5,6 +5,10 @@
 (defn complex-make [real imag]
   {:real real :imag imag})
 
+(defn complex-add [c1 c2]
+  {:real (+ (:real c1) (:real c2))
+   :imag (+ (:imag c1) (:imag c2))})
+
 (defn complex-multiply [c1 c2]
   (let [x (:real c1)
         y (:imag c1)
@@ -18,3 +22,14 @@
               (* (:real c) (:real c)) 
               (* (:imag c) (:imag c)))))
 
+(defn mandelbrot-depth [z c depth]
+  (if (> depth 100)
+    depth
+    (if
+      (< (complex-magnitude z) 2)
+      (let [z-squared (complex-multiply z z)]
+        (mandelbrot-depth (complex-add z-squared c) c (+ depth 1)))
+      depth)))
+
+(defn mandelbrot [c]
+  (mandelbrot-depth c c 0))
