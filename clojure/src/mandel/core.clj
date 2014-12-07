@@ -75,8 +75,8 @@
         (rect2 :x) (+ (rect2 :x) (rect2 :w))
         (point :x))
    :y (linear-interpolate
-        (rect1 :y) (+ (rect1 :y) (rect1 :w))
-        (rect2 :y) (+ (rect2 :y) (rect2 :w))
+        (rect1 :y) (+ (rect1 :y) (rect1 :h))
+        (rect2 :y) (+ (rect2 :y) (rect2 :h))
         (point :y))})
 
 ; 'Fixes' an issue where fractional coefficients cause the iteration to fail
@@ -95,4 +95,14 @@
     (generate-coords (viewport-rect :w) (viewport-rect :h))))
 
 (defn mandelbrot-test []
-  (mandelbrot-render {:x -2 :y -2 :w 4 :h 4} {:x 0 :y 0 :w 100 :h 100}))
+  (mandelbrot-render {:x -2 :y -2 :w 4 :h 4} {:x 0 :y 0 :w 100 :h 60}))
+
+(defn show-mandelbrot [rows]
+  (let [row (first rows)
+        next-rows (rest rows)]
+    (if (empty? row)
+      nil
+      (do
+        (print (apply str row))
+        (println)
+        (show-mandelbrot next-rows)))))
