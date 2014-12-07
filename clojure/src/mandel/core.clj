@@ -43,7 +43,7 @@
               (* (:imag c) (:imag c)))))
 
 (defn mandelbrot [c]
-  (loop [z c depth 0]
+  (loop [z (complex-make 0 0) depth 0]
     (if (or (>= depth MAX-DEPTH)
             (>= (complex-magnitude z) 2))
       depth
@@ -69,7 +69,7 @@
 
 (defn translate-point
   "Interpolates a point in rect1 to a similar point within rect2"
-  [rect1 rect2 point]
+  [point rect1 rect2]
   {:x (linear-interpolate
         (rect1 :x) (+ (rect1 :x) (rect1 :w))
         (rect2 :x) (+ (rect2 :x) (rect2 :w))
@@ -78,3 +78,21 @@
         (rect1 :y) (+ (rect1 :y) (rect1 :w))
         (rect2 :y) (+ (rect2 :y) (rect2 :w))
         (point :y))})
+
+; 'Fixes' an issue where fractional coefficients cause the iteration to fail
+(defn cast-complex-coefficients-to-float [c]
+    {:real (float (c :real)) :imag (float (c :imag))})
+
+(defn mandelbrot-render [world-rect viewport-rect]
+  (map-coords
+    (fn [p]
+      (-> p
+        (translate-point viewport-rect world-rect)
+        point-to-complex
+        cast-complex-coefficients-to-float
+        mandelbrot
+        get-shade-for-depth))
+    (generate-coords (viewport-rect :w) (viewport-rect :h))))
+
+(defn mandelbrot-test []
+  (mandelbrot-render {:x -2 :y -2 :w 4 :h 4} {:x 0 :y 0 :w 100 :h 100}))
